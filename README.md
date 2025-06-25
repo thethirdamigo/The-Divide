@@ -1,6 +1,6 @@
-The Divide: A Digital Equity RPG
+**The Divide: A Digital Equity RPG**
 
-#images hereee
+![Game Screenshot](images/screenshot_1.png)
 
 An interactive RPG that transforms complex digital equity policy into engaging, educational gameplay
 
