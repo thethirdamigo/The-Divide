@@ -2,7 +2,7 @@
 
 ![Game Screenshot](images/screenshot_1.png)
 
-An interactive RPG that transforms complex digital equity policy into engaging, educational gameplay
+*An interactive RPG that transforms complex digital equity policy into engaging, educational gameplay*
 
 Experience the digital divide through the eyes of a Bridge Walker—a mystical character working to heal the rift between the Connected Lands and the Shadowed Territories.
 
@@ -135,4 +135,4 @@ Long-term Vision
  Advanced assessment tools
  Expanded to other social justice topics
 
-"The path of the Bridge Walker is never easy, and your journey has shown you the true complexity of The Divide. Yet this understanding itself is valuable—for only by acknowledging the depth of the challenge can future healers hope to bridge it more successfully."
+*"The path of the Bridge Walker is never easy, and your journey has shown you the true complexity of The Divide. Yet this understanding itself is valuable—for only by acknowledging the depth of the challenge can future healers hope to bridge it more successfully."*
