@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Divide: A Digital Realm RPG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            color: #e0e6ed;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .game-container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #4a90e2;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 900px;
+            width: 95%;
+            margin: 20px auto;
+            box-shadow: 0 0 30px rgba(74, 144, 226, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .game-title {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 10px;
+            font-size: 2.8em;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0a6b0;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        .game-screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .character-panel {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #4a90e2;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .character-info h3 {
+            color: #4a90e2;
+            margin-bottom: 5px;
+            font-size: 1.3em;
+        }
+
+        .character-title {
+            color: #a0a6b0;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-orb {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-orb.connection {
+            border-color: #e74c3c;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .stat-orb.wisdom {
+            border-color: #f39c12;
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .stat-orb.unity {
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease;
+        }
+
+        .connection .stat-fill { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+        .wisdom .stat-fill { background: linear-gradient(90deg, #d68910, #f39c12); }
+        .unity .stat-fill { background: linear-gradient(90deg, #239b56, #2ecc71); }
+
+        .quest-scroll {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border: 2px solid #4a90e2;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .quest-scroll::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4a90e2, #357abd, #2c5aa0);
+            border-radius: 15px;
+            z-index: -1;
+            animation: borderGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes borderGlow {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        .quest-title {
+            color: #4a90e2;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .quest-description {
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #e0e6ed;
+            text-align: justify;
+        }
+
+        .choices-container {
+            display: grid;
+            gap: 15px;
+        }
+
+        .choice-rune {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border: 2px solid #4a90e2;
+            color: #e0e6ed;
+            padding: 18px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-rune::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .choice-rune:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+            border-color: #5ba3f5;
+        }
+
+        .choice-rune:hover::before {
+            left: 100%;
+        }
+
+        .choice-rune.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .choice-symbol {
+            display: inline-block;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .prophecy {
+            background: linear-gradient(135deg, #1e3a5f, #2c5aa0);
+            border: 1px solid #4a90e2;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .prophecy::before {
+            content: '✦';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #1e3a5f;
+            color: #4a90e2;
+            padding: 0 10px;
+            font-size: 1.2em;
+        }
+
+        .prophecy-text {
+            color: #b8d4f0;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .start-ritual {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .start-ritual:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.5);
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+
+        .continue-btn:hover {
+            background: linear-gradient(135deg, #5ba3f5, #4a90e2);
+            transform: translateY(-2px);
+        }
+
+        .realm-ending {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .ending-title {
+            font-size: 2.2em;
+            color: #4a90e2;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
+        }
+
+        .ending-description {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            color: #e0e6ed;
+        }
+
+        .final-stats {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid #4a90e2;
+        }
+
+        .lore-text {
+            color: #a0a6b0;
+            font-style: italic;
+            margin: 15px 0;
+            padding: 15px;
+            border-left: 3px solid #4a90e2;
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .avatar-selection {
+            margin: 25px 0;
+        }
+
+        .avatar-preview {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 15px;
+            border: 2px solid #4a90e2;
+        }
+
+        .large-avatar {
+            font-size: 4em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(74, 144, 226, 0.5));
+        }
+
+        .avatar-name {
+            font-size: 1.5em;
+            color: #4a90e2;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .avatar-description {
+            color: #a0a6b0;
+            font-style: italic;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .avatar-option {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            border: 2px solid #4a90e2;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.4);
+            border-color: #5ba3f5;
+        }
+
+        .avatar-option.selected {
+            border-color: #2ecc71;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .avatar-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .avatar-label {
+            color: #e0e6ed;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .origin-selection {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #4a90e2;
+        }
+
+        .origin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .origin-card {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border: 2px solid #4a90e2;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .origin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .origin-card.selected {
+            border-color: #2ecc71;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .origin-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .origin-title {
+            color: #4a90e2;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .origin-bonus {
+            color: #a0a6b0;
+            font-size: 0.9em;
+        }
+
+        .character-avatar.wanderer { background: linear-gradient(135deg, #4a90e2, #357abd); }
+        .character-avatar.sage { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .character-avatar.tech { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .character-avatar.cultivator { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .character-avatar.guardian { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .character-avatar.storyteller { background: linear-gradient(135deg, #e91e63, #ad1457); }
+
+        .companion-panel {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #4a90e2;
+            display: none;
+        }
+
+        .companion-panel.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .companion-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .companion-text {
+            color: #e0e6ed;
+            font-style: italic;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="game-screen active">
+            <h1 class="game-title">The Divide</h1>
+            <p class="subtitle">A Tale of Two Realms</p>
+            
+            <div class="quest-scroll">
+                <div class="lore-text">
+                    Long ago, the world was whole. Then came The Great Sundering—a catastrophic rift that split reality into two realms: the <strong>Connected Lands</strong>, where information flows like rivers of light, and the <strong>Shadowed Territories</strong>, where knowledge moves as slowly as whispers in the wind.
+                </div>
+                
+                <p class="quest-description">
+                    You are about to become a <strong>Bridge Walker</strong>, one of the few who can traverse both realms. Your sacred duty is to weave connections across The Divide, bringing the light of the Connected Lands to those lost in shadow, while ensuring the wisdom of both worlds endures.
+                </p>
+                
+                <p class="quest-description">
+                    Your power manifests through three mystical forces:
+                </p>
+                
+                <div style="margin: 20px 0; padding-left: 20px;">
+                    <div style="margin: 10px 0;"><span style="color: #e74c3c;">🔗 Connection</span> - The bridges you build between realms</div>
+                    <div style="margin: 10px 0;"><span style="color: #f39c12;">📚 Wisdom</span> - The knowledge you help others master</div>
+                    <div style="margin: 10px 0;"><span style="color: #2ecc71;">🤝 Unity</span> - The resources you gather and share</div>
+                </div>
+                
+                <div class="lore-text">
+                    Each choice echoes across both realms. Some paths strengthen one force while weakening others. True mastery lies in balance, for only through harmony can The Divide be healed.
+                </div>
+            </div>
+            
+            <button class="start-ritual" onclick="showCharacterCreation()">Create Your Bridge Walker</button>
+        </div>
+
+        <!-- Character Creation Screen -->
+        <div id="character-creation" class="game-screen">
+            <h1 class="game-title">Forge Your Legend</h1>
+            <p class="subtitle">Choose your appearance and origin story</p>
+            
+            <div class="quest-scroll">
+                <h3 class="quest-title">Choose Your Avatar</h3>
+                
+                <div class="avatar-selection">
+                    <div class="avatar-preview">
+                        <div class="large-avatar" id="preview-avatar">🌉</div>
+                        <div class="avatar-name" id="preview-name">The Wanderer</div>
+                        <div class="avatar-description" id="preview-description">A mysterious figure who walks between worlds</div>
+                    </div>
+                    
+                    <div class="avatar-grid">
+                        <div class="avatar-option" onclick="selectAvatar('🌉', 'The Wanderer', 'A mysterious figure who walks between worlds', 'wanderer')">
+                            <div class="avatar-icon">🌉</div>
+                            <div class="avatar-label">Wanderer</div>
+                        </div>
+                        <div class="avatar-option" onclick="selectAvatar('🧙‍♀️', 'The Sage', 'A wise keeper of ancient knowledge', 'sage')">
+                            <div class="avatar-icon">🧙‍♀️</div>
+                            <div class="avatar-label">Sage</div>
+                        </div>
+                        <div class="avatar-option" onclick="selectAvatar('⚡', 'The Technomancer', 'A master of digital arts and innovation', 'tech')">
+                            <div class="avatar-icon">⚡</div>
+                            <div class="avatar-label">Technomancer</div>
+                        </div>
+                        <div class="avatar-option" onclick="selectAvatar('🌱', 'The Cultivator', 'A nurturing soul who helps communities grow', 'cultivator')">
+                            <div class="avatar-icon">🌱</div>
+                            <div class="avatar-label">Cultivator</div>
+                        </div>
+                        <div class="avatar-option" onclick="selectAvatar('🛡️', 'The Guardian', 'A protector of the vulnerable and voiceless', 'guardian')">
+                            <div class="avatar-icon">🛡️</div>
+                            <div class="avatar-label">Guardian</div>
+                        </div>
+                        <div class="avatar-option" onclick="selectAvatar('🎭', 'The Storyteller', 'A weaver of tales who connects hearts', 'storyteller')">
+                            <div class="avatar-icon">🎭</div>
+                            <div class="avatar-label">Storyteller</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="origin-selection">
+                    <h4 style="color: #4a90e2; margin: 25px 0 15px 0;">Choose Your Origin</h4>
+                    <p style="color: #a0a6b0; margin-bottom: 20px;">Your background shapes your starting abilities</p>
+                    
+                    <div class="origin-grid">
+                        <div class="origin-card" onclick="selectOrigin('connected', 'Born in the Connected Lands', 'You understand technology but must learn to help those without it', {connection: 10, wisdom: -5, unity: -5})">
+                            <div class="origin-icon">💻</div>
+                            <div class="origin-title">Connected Lands</div>
+                            <div class="origin-bonus">+Connection, -Wisdom, -Unity</div>
+                        </div>
+                        <div class="origin-card" onclick="selectOrigin('shadowed', 'Raised in the Shadowed Territories', 'You know struggle but have wisdom and community bonds', {connection: -10, wisdom: 10, unity: 5})">
+                            <div class="origin-icon">🕯️</div>
+                            <div class="origin-title">Shadowed Territories</div>
+                            <div class="origin-bonus">-Connection, +Wisdom, +Unity</div>
+                        </div>
+                        <div class="origin-card" onclick="selectOrigin('bridge', 'Child of the Bridge', 'Balanced between worlds with equal understanding', {connection: 5, wisdom: 5, unity: 0})">
+                            <div class="origin-icon">🌉</div>
+                            <div class="origin-title">The Bridge</div>
+                            <div class="origin-bonus">+Connection, +Wisdom</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="start-ritual" id="begin-journey-btn" onclick="startQuest()" style="opacity: 0.5; pointer-events: none;">Begin Your Journey</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="game-screen">
+            <div class="character-panel">
+                <div class="character-avatar" id="player-avatar">🌉</div>
+                <div class="character-info">
+                    <h3 id="player-name">The Bridge Walker</h3>
+                    <div class="character-title" id="player-title">Healer of The Divide</div>
+                    <div style="color: #a0a6b0; font-size: 0.9em;">Chapter <span id="chapter-number">1</span> of your legend unfolds...</div>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-orb connection">
+                    <div class="stat-label">Connection</div>
+                    <div class="stat-value" id="connection-stat">50</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="connection-bar" style="width: 50%"></div>
+                    </div>
+                </div>
+                <div class="stat-orb wisdom">
+                    <div class="stat-label">Wisdom</div>
+                    <div class="stat-value" id="wisdom-stat">40</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="wisdom-bar" style="width: 40%"></div>
+                    </div>
+                </div>
+                <div class="stat-orb unity">
+                    <div class="stat-label">Unity</div>
+                    <div class="stat-value" id="unity-stat">60</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="unity-bar" style="width: 60%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quest-scroll" id="quest-container">
+                <!-- Quests will be loaded here -->
+            </div>
+
+            <div class="companion-panel" id="companion-panel">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <div class="companion-avatar">🦉</div>
+                    <strong style="color: #f39c12;">Pixel, your Digital Familiar</strong>
+                </div>
+                <div class="companion-text" id="companion-text"></div>
+            </div>
+
+            <div id="prophecy-container"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div id="end-screen" class="game-screen">
+            <div class="realm-ending">
+                <h2 class="ending-title" id="ending-title"></h2>
+                <p class="ending-description" id="ending-description"></p>
+                <div class="final-stats" id="final-stats-display"></div>
+                <button class="start-ritual" onclick="restartQuest()">Walk the Bridge Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            connection: 50,
+            wisdom: 40,
+            unity: 60,
+            currentQuest: 0,
+            character: {
+                avatar: '🌉',
+                name: 'The Wanderer',
+                description: 'A mysterious figure who walks between worlds',
+                class: 'wanderer',
+                origin: null,
+                originBonus: null
+            }
+        };
+
+        const companionQuips = [
+            "I sense the digital winds shifting... your choice will echo across both realms.",
+            "The ancient algorithms whisper of consequences beyond what mortals can see.",
+            "Fascinating! This decision creates new pathways in the data streams.",
+            "The binary spirits are pleased with your wisdom, Bridge Walker.",
+            "I detect strong resonance patterns... this choice strengthens the network.",
+            "My sensors indicate this path will challenge the status quo, as it should.",
+            "The digital divide trembles when actions like these ripple across reality."
+        ];
+
+        function showCharacterCreation() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('character-creation').classList.add('active');
+        }
+
+        function selectAvatar(icon, name, description, className) {
+            // Remove selection from all avatars
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select the clicked avatar
+            event.target.closest('.avatar-option').classList.add('selected');
+            
+            // Update preview
+            document.getElementById('preview-avatar').textContent = icon;
+            document.getElementById('preview-name').textContent = name;
+            document.getElementById('preview-description').textContent = description;
+            
+            // Update game state
+            gameState.character.avatar = icon;
+            gameState.character.name = name;
+            gameState.character.description = description;
+            gameState.character.class = className;
+            
+            checkCharacterComplete();
+        }
+
+        function selectOrigin(type, title, description, bonus) {
+            // Remove selection from all origins
+            document.querySelectorAll('.origin-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select the clicked origin
+            event.target.closest('.origin-card').classList.add('selected');
+            
+            // Update game state
+            gameState.character.origin = type;
+            gameState.character.originBonus = bonus;
+            
+            // Apply stat bonuses
+            gameState.connection = Math.max(0, Math.min(100, 50 + bonus.connection));
+            gameState.wisdom = Math.max(0, Math.min(100, 40 + bonus.wisdom));
+            gameState.unity = Math.max(0, Math.min(100, 60 + bonus.unity));
+            
+            checkCharacterComplete();
+        }
+
+        function checkCharacterComplete() {
+            const beginBtn = document.getElementById('begin-journey-btn');
+            if (gameState.character.avatar && gameState.character.origin) {
+                beginBtn.style.opacity = '1';
+                beginBtn.style.pointerEvents = 'auto';
+            }
+        }
+
+        function startQuest() {
+            if (!gameState.character.avatar || !gameState.character.origin) {
+                return; // Character not complete
+            }
+            
+            // Update character display
+            document.getElementById('player-avatar').textContent = gameState.character.avatar;
+            document.getElementById('player-avatar').className = `character-avatar ${gameState.character.class}`;
+            document.getElementById('player-name').textContent = gameState.character.name;
+            
+            // Update title based on origin
+            let title = 'Healer of The Divide';
+            if (gameState.character.origin === 'connected') {
+                title = 'Tech Missionary';
+            } else if (gameState.character.origin === 'shadowed') {
+                title = 'Digital Liberator';
+            } else if (gameState.character.origin === 'bridge') {
+                title = 'Harmony Seeker';
+            }
+            document.getElementById('player-title').textContent = title;
+            
+            // Hide character creation, show game
+            document.getElementById('character-creation').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            
+            updateStats();
+            loadQuest();
+        }
+
+        const quests = [
+            {
+                title: "The Isolated Village",
+                description: "You arrive at Whisperhollow, a village trapped in the Shadowed Territories. Here, children struggle to learn from distant teachers, their lessons arriving like scattered leaves on an autumn wind. The village elder speaks of ancient copper threads that once carried voices across vast distances, but they have long since fallen silent.",
+                lore: "The copper threads represent the old internet infrastructure—abandoned, outdated, leaving communities disconnected from opportunity.",
+                choices: [
+                    {
+                        text: "🌟 Weave new threads of starlight to connect the village to the great libraries",
+                        symbol: "🌟",
+                        effects: { connection: 25, wisdom: 5, unity: -20 },
+                        feedback: "Your starlight threads blaze across the sky, connecting Whisperhollow to the vast knowledge of the Connected Lands. Though costly, this bridge will serve generations.",
+                        symbolism: "Federal broadband investment—expensive but transformative infrastructure"
+                    },
+                    {
+                        text: "🕸️ Teach the villagers to spin their own web of connection",
+                        symbol: "🕸️",
+                        effects: { connection: 15, wisdom: 10, unity: -10 },
+                        feedback: "The villagers learn to create their own network, sharing knowledge among themselves. Their self-reliance grows stronger with each connection they forge.",
+                        symbolism: "Community mesh networks—grassroots solutions building local capacity"
+                    },
+                    {
+                        text: "📡 Channel distant signals through crystal talismans",
+                        symbol: "📡",
+                        effects: { connection: 10, wisdom: 5, unity: -5 },
+                        feedback: "The crystal talismans capture signals from afar, offering a bridge between realms. It's a start, though not as strong as permanent threads.",
+                        symbolism: "Mobile hotspot programs—practical short-term connectivity solutions"
+                    }
+                ]
+            },
+            {
+                title: "The Elders' Sanctuary",
+                description: "In the twilight gardens of Memoryhall, the Elders sit in silence. Once keepers of ancient wisdom, they now feel lost as the world transforms around them. The young speak in tongues of glass and light, while the Elders remember only scroll and quill. A chasm grows between generations, threatening to lose the wisdom of ages.",
+                lore: "The digital divide isn't just about access—it's about the fear and isolation that comes when the world changes faster than we can adapt.",
+                choices: [
+                    {
+                        text: "🤲 Pair Elders with young Apprentices to share both old and new wisdom",
+                        symbol: "🤲",
+                        effects: { connection: 5, wisdom: 20, unity: -5 },
+                        feedback: "A beautiful exchange unfolds—Elders share their life wisdom while Apprentices teach them the new ways. Both generations grow stronger together.",
+                        symbolism: "Intergenerational digital mentoring programs"
+                    },
+                    {
+                        text: "📖 Summon Guild Masters to teach the ancient arts in new ways",
+                        symbol: "📖",
+                        effects: { connection: 5, wisdom: 15, unity: -15 },
+                        feedback: "The Guild Masters bring structure and expertise, but their formal ways lack the personal touch the Elders truly need.",
+                        symbolism: "Professional digital literacy instructors"
+                    },
+                    {
+                        text: "📜 Create illuminated scrolls that teach the new ways step by step",
+                        symbol: "📜",
+                        effects: { connection: 0, wisdom: 10, unity: -5 },
+                        feedback: "Your scrolls provide guidance, but many Elders still struggle alone. Knowledge without companionship can only go so far.",
+                        symbolism: "Self-help guides and tutorials—helpful but lacking personal support"
+                    }
+                ]
+            },
+            {
+                title: "The Academy of Unequal Learning",
+                description: "At Brightspire Academy, a harsh truth is revealed: half the young scholars possess Crystals of Learning while others must share fragments or go without entirely. During the Great Isolation (when a plague forced all learning into the realm of light), these inequalities became chasms. Some students soared while others fell behind, their potential dimmed by circumstance rather than ability.",
+                lore: "Every child deserves the same tools to unlock their potential. When technology becomes a gateway to learning, lack of access becomes a barrier to dreams.",
+                choices: [
+                    {
+                        text: "💎 Forge a Crystal of Learning for every student to carry home",
+                        symbol: "💎",
+                        effects: { connection: 20, wisdom: 15, unity: -25 },
+                        feedback: "Every student now holds their own Crystal of Learning. The investment is great, but no child will be left behind.",
+                        symbolism: "1:1 device programs—comprehensive but expensive equity solutions"
+                    },
+                    {
+                        text: "♻️ Transform discarded crystals into new tools for learning",
+                        symbol: "♻️",
+                        effects: { connection: 15, wisdom: 10, unity: -10 },
+                        feedback: "Your alchemy turns forgotten crystals into treasures. Students receive their tools while waste becomes wonder.",
+                        symbolism: "Refurbished device programs—sustainable and cost-effective"
+                    },
+                    {
+                        text: "🤝 Unite the merchants to sponsor crystals for the neediest students",
+                        symbol: "🤝",
+                        effects: { connection: 10, wisdom: 5, unity: 10 },
+                        feedback: "The merchants' generosity creates bonds throughout the community. Though not every student benefits immediately, the spirit of sharing grows.",
+                        symbolism: "Business partnerships for student technology—community investment approach"
+                    }
+                ]
+            },
+            {
+                title: "The Workers' Transformation",
+                description: "In the great forges of Ironhold, the sound of hammers grows quiet. The Automaton Spirits now do the work once done by human hands. Displaced Workers gather in the Square of Sorrow, their skills seemingly worthless in this new age. Yet opportunity beckons in the Connected Lands—if only they can learn to speak the language of light and data.",
+                lore: "When entire ways of life become obsolete, we face a choice: abandon those displaced, or invest in their transformation and renewal.",
+                choices: [
+                    {
+                        text: "🏛️ Partner with the Grand Academy to offer complete transformation training",
+                        symbol: "🏛️",
+                        effects: { connection: 10, wisdom: 25, unity: -15 },
+                        feedback: "The Workers emerge as Digital Artisans, their skills reforged for the new age. The investment in their complete transformation pays dividends for generations.",
+                        symbolism: "Comprehensive retraining partnerships with educational institutions"
+                    },
+                    {
+                        text: "⚡ Focus on essential spells needed for immediate survival",
+                        symbol: "⚡",
+                        effects: { connection: 5, wisdom: 15, unity: -10 },
+                        feedback: "The Workers quickly learn the essential skills needed to navigate the new world. It's not everything, but it's enough to start rebuilding their lives.",
+                        symbolism: "Targeted skills training for immediate employability"
+                    },
+                    {
+                        text: "📚 Create self-study grimoires for learning at their own pace",
+                        symbol: "📚",
+                        effects: { connection: 0, wisdom: 10, unity: -5 },
+                        feedback: "Some Workers thrive with the grimoires, teaching themselves new arts. Others struggle without guidance, highlighting the need for more personal support.",
+                        symbolism: "Online learning platforms—flexible but requiring self-motivation"
+                    }
+                ]
+            },
+            {
+                title: "The Final Convergence",
+                description: "You stand at the heart of The Divide, where the two realms meet in swirling mists of possibility. The bridges you've built pulse with life, the wisdom you've shared illuminates dark corners, and the unity you've fostered creates new alliances. Yet The Divide still exists—perhaps it always will. Your final choice will determine not whether it disappears, but how future Bridge Walkers will approach the eternal task of healing.",
+                lore: "The digital divide is not a problem to be solved once, but a challenge that evolves with each generation. Our choices today shape the tools and wisdom available to tomorrow's healers.",
+                choices: [
+                    {
+                        text: "🌈 Establish an Academy of Bridge Walkers to train future healers",
+                        symbol: "🌈",
+                        effects: { connection: 15, wisdom: 20, unity: -10 },
+                        feedback: "Your Academy becomes a beacon of hope, training generations of Bridge Walkers. The healing continues long after your legend ends.",
+                        symbolism: "Institutional digital equity programs—sustainable long-term solutions"
+                    },
+                    {
+                        text: "🗝️ Create a Council of Realms to guide policy and sharing",
+                        symbol: "🗝️",
+                        effects: { connection: 10, wisdom: 10, unity: 15 },
+                        feedback: "The Council ensures that decisions consider both realms equally. Governance becomes a bridge between the Connected and the Shadowed.",
+                        symbolism: "Digital governance that includes all voices, not just the connected"
+                    },
+                    {
+                        text: "⚖️ Encode the Laws of Digital Balance into the fabric of reality",
+                        symbol: "⚖️",
+                        effects: { connection: 20, wisdom: 5, unity: 20 },
+                        feedback: "Your laws ensure that no future innovation can widen The Divide without also building bridges. Balance becomes woven into progress itself.",
+                        symbolism: "Policy requiring equity considerations in all technological development"
+                    }
+                ]
+            }
+        ];
+
+        function startQuest() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            loadQuest();
+        }
+
+        function loadQuest() {
+            if (gameState.currentQuest >= quests.length) {
+                endQuest();
+                return;
+            }
+
+            const quest = quests[gameState.currentQuest];
+            const container = document.getElementById('quest-container');
+            
+            document.getElementById('chapter-number').textContent = gameState.currentQuest + 1;
+            
+            container.innerHTML = `
+                <div class="quest-title">${quest.title}</div>
+                <p class="quest-description">${quest.description}</p>
+                <div class="lore-text">${quest.lore}</div>
+                <div class="choices-container">
+                    ${quest.choices.map((choice, index) => 
+                        `<button class="choice-rune" onclick="makeChoice(${index})">
+                            <span class="choice-symbol">${choice.symbol}</span>
+                            ${choice.text}
+                        </button>`
+                    ).join('')}
+                </div>
+            `;
+
+            document.getElementById('prophecy-container').innerHTML = '';
+        }
+
+        function makeChoice(choiceIndex) {
+            const quest = quests[gameState.currentQuest];
+            const choice = quest.choices[choiceIndex];
+
+            // Update game state
+            gameState.connection = Math.max(0, Math.min(100, gameState.connection + choice.effects.connection));
+            gameState.wisdom = Math.max(0, Math.min(100, gameState.wisdom + choice.effects.wisdom));
+            gameState.unity = Math.max(0, Math.min(100, gameState.unity + choice.effects.unity));
+
+            // Update display
+            updateStats();
+
+            // Show companion reaction
+            const companionPanel = document.getElementById('companion-panel');
+            const companionText = document.getElementById('companion-text');
+            const randomQuip = companionQuips[Math.floor(Math.random() * companionQuips.length)];
+            companionText.textContent = randomQuip;
+            companionPanel.classList.add('active');
+
+            // Show prophecy (feedback)
+            const prophecyContainer = document.getElementById('prophecy-container');
+            prophecyContainer.innerHTML = `
+                <div class="prophecy">
+                    <div class="prophecy-text">
+                        ${choice.feedback}
+                        <br><br>
+                        <em>Symbolic meaning: ${choice.symbolism}</em>
+                    </div>
+                    <button class="continue-btn" onclick="nextQuest()">Continue Your Journey</button>
+                </div>
+            `;
+
+            // Disable choice buttons
+            const choiceButtons = document.querySelectorAll('.choice-rune');
+            choiceButtons.forEach(btn => {
+                btn.classList.add('disabled');
+                btn.onclick = null;
+            });
+        }
+
+        function nextQuest() {
+            // Hide companion panel
+            document.getElementById('companion-panel').classList.remove('active');
+            
+            gameState.currentQuest++;
+            loadQuest();
+        }
+
+        function updateStats() {
+            document.getElementById('connection-stat').textContent = gameState.connection;
+            document.getElementById('wisdom-stat').textContent = gameState.wisdom;
+            document.getElementById('unity-stat').textContent = gameState.unity;
+
+            document.getElementById('connection-bar').style.width = gameState.connection + '%';
+            document.getElementById('wisdom-bar').style.width = gameState.wisdom + '%';
+            document.getElementById('unity-bar').style.width = gameState.unity + '%';
+        }
+
+        function endQuest() {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('end-screen').classList.add('active');
+
+            const averageScore = Math.round((gameState.connection + gameState.wisdom + gameState.unity) / 3);
+            let title = '';
+            let description = '';
+
+            if (averageScore >= 80) {
+                title = "The Realm Healer";
+                description = "Your legend will be sung for ages. The bridges you built shine like starlight, connecting distant shores of possibility. The wisdom you shared has grown into great trees of knowledge, and the unity you fostered has become an unbreakable chain of mutual support. Though The Divide may never fully disappear, you have shown that it can be crossed, bridged, and healed through dedication and wisdom.";
+            } else if (averageScore >= 65) {
+                title = "The Devoted Bridge Walker";
+                description = "You have walked the path with honor and made meaningful change across both realms. Your efforts have created lasting bridges between the Connected Lands and the Shadowed Territories. While challenges remain, your work has given hope to many and provided tools for future Bridge Walkers to continue the sacred duty.";
+            } else if (averageScore >= 50) {
+                title = "The Learning Wanderer";
+                description = "Your journey has been one of discovery and growth. Each choice taught you something new about the delicate balance required to heal The Divide. Though your bridges may not span the widest chasms, you have learned that every small connection matters, and every person helped changes the world a little.";
+            } else {
+                title = "The Humble Seeker";
+                description = "The path of the Bridge Walker is never easy, and your journey has shown you the true complexity of The Divide. Each decision revealed new challenges and unintended consequences. Yet this understanding itself is valuable—for only by acknowledging the depth of the challenge can future healers hope to bridge it more successfully.";
+            }
+
+            document.getElementById('ending-title').textContent = title;
+            document.getElementById('ending-description').textContent = description;
+            
+            document.getElementById('final-stats-display').innerHTML = `
+                <h3 style="color: #4a90e2; margin-bottom: 20px;">Your Final Legacy</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px;">
+                    <div style="text-align: center;">
+                        <div style="color: #e74c3c; font-size: 1.5em; margin-bottom: 5px;">🔗</div>
+                        <div style="color: #e74c3c; font-weight: bold;">Connection: ${gameState.connection}</div>
+                        <div style="font-size: 0.9em; color: #a0a6b0;">Bridges Built</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: #f39c12; font-size: 1.5em; margin-bottom: 5px;">📚</div>
+                        <div style="color: #f39c12; font-weight: bold;">Wisdom: ${gameState.wisdom}</div>
+                        <div style="font-size: 0.9em; color: #a0a6b0;">Knowledge Shared</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="color: #2ecc71; font-size: 1.5em; margin-bottom: 5px;">🤝</div>
+                        <div style="color: #2ecc71; font-weight: bold;">Unity: ${gameState.unity}</div>
+                        <div style="font-size: 0.9em; color: #a0a6b0;">Resources Gathered</div>
+                    </div>
+                </div>
+                <div class="lore-text" style="margin-top: 25px;">
+                    "The Divide is not conquered by any single hero, but healed through the accumulated wisdom and compassion of all who dare to walk between worlds."
+                </div>
+            `;
+        }
+
+        function restartQuest() {
+            gameState = {
+                connection: 50,
+                wisdom: 40,
+                unity: 60,
+                currentQuest: 0,
+                character: {
+                    avatar: '🌉',
+                    name: 'The Wanderer',
+                    description: 'A mysterious figure who walks between worlds',
+                    class: 'wanderer',
+                    origin: null,
+                    originBonus: null
+                }
+            };
+            
+            // Reset character creation form
+            document.querySelectorAll('.avatar-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelectorAll('.origin-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Reset preview
+            document.getElementById('preview-avatar').textContent = '🌉';
+            document.getElementById('preview-name').textContent = 'The Wanderer';
+            document.getElementById('preview-description').textContent = 'A mysterious figure who walks between worlds';
+            
+            // Disable begin button
+            const beginBtn = document.getElementById('begin-journey-btn');
+            beginBtn.style.opacity = '0.5';
+            beginBtn.style.pointerEvents = 'none';
+            
+            // Hide companion panel
+            document.getElementById('companion-panel').classList.remove('active');
+            
+            document.getElementById('end-screen').classList.remove('active');
+            document.getElementById('start-screen').classList.add('active');
+            updateStats();
+        }
+    </script>
+</body>
+</html>
