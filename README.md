@@ -49,6 +49,7 @@ Character Types:
 
 Educational Use:
 For Educators:
+
 The Divide is designed for:
 
 Social Studies classes exploring inequality and policy
