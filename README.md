@@ -40,12 +40,12 @@ Reflect and Discuss: Use built-in prompts to think critically about your decisio
 Character Types:
 | Avatar | Approach | Strengths |
 |--------|----------|-----------|
-| 🌉 **The Wanderer** | Balanced bridge-building | Versatile problem-solving |
-| 🧙‍♀️ **The Sage** | Knowledge-focused | Education and wisdom-sharing |
-| ⚡ **The Technomancer** | Innovation-driven | Technical solutions |
-| 🌱 **The Cultivator** | Community-building | Grassroots organizing |
-| 🛡️ **The Guardian** | Protection-focused | Advocacy and policy |
-| 🎭 **The Storyteller** | Communication-centered | Cultural bridge-building |
+| **The Wanderer** | Balanced bridge-building | Versatile problem-solving |
+| **The Sage** | Knowledge-focused | Education and wisdom-sharing |
+| **The Technomancer** | Innovation-driven | Technical solutions |
+| **The Cultivator** | Community-building | Grassroots organizing |
+| **The Guardian** | Protection-focused | Advocacy and policy |
+| **The Storyteller** | Communication-centered | Cultural bridge-building |
 
 Educational Use:
 For Educators:
