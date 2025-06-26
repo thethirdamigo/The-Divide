@@ -136,4 +136,7 @@ Long-term Vision
  Advanced assessment tools
  Expanded to other social justice topics
 
+ Presentation Slides:
+https://www.canva.com/design/DAGrYX4GB0Y/RLhSPtQGOjNF3wu7ssY96A/edit?utm_content=DAGrYX4GB0Y&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 *"The path of the Bridge Walker is never easy, and your journey has shown you the true complexity of The Divide. Yet this understanding itself is valuable—for only by acknowledging the depth of the challenge can future healers hope to bridge it more successfully."*
